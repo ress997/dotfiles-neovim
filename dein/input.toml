@@ -1,0 +1,153 @@
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+depends = 'context_filetype.vim'
+on_event = 'InsertEnter'
+hook_add = '''
+	" 補完のオプション
+	set completeopt=menu,menuone,noinsert,noselect
+	" 補完の表示項目数
+	set pumheight=10
+	" ins-completion-menu 関連のメッセージを表示しない
+	set shortmess+=c
+'''
+hook_source = '''
+	let g:deoplete#enable_at_startup = g:true
+
+	" 大文字と小文字を区別しない
+	let g:deoplete#enable_ignore_case = g:true
+	" 大文字と小文字が混在してる場合は区別する
+	let g:deoplete#enable_smart_case = g:true
+	" 要素語の最初を大文字
+	let g:deoplete#enable_camel_case = g:true
+
+	" 自動で候補を更新
+	let g:deoplete#enable_refresh_always = g:true
+
+	" The list of skip characters in the auto completion.
+	let g:deoplete#skip_chars = ['(', ')']
+
+	" <TAB>: completion.
+	inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#mappings#manual_complete()
+	function! s:check_back_space() abort
+		let col = col('.') - 1
+		return !col || getline('.')[col - 1]  =~ '\s'
+	endfunction
+
+	" <S-TAB>: completion back.
+	inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
+
+	" <C-h>, <BS>: close popup and delete backword char.
+	inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
+	inoremap <expr><BS> deoplete#smart_close_popup()."\<C-h>"
+
+	" <C-g>: undo
+	inoremap <expr><C-g> deoplete#undo_completion()
+
+	" <CR>: close popup and save indent.
+	inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+		function! s:my_cr_function() abort
+		return deoplete#close_popup() . "\<CR>"
+	endfunction
+
+	" ': ポップアップメニューを閉じる
+	inoremap <expr> ' pumvisible() ? deoplete#close_popup() : "'"
+
+	" converters
+	call deoplete#custom#source('_', 'converters', [
+	\	'converter_remove_paren',
+	\ 	'converter_remove_overlap',
+	\ 	'matcher_length',
+	\ 	'converter_truncate_abbr',
+	\ 	'converter_truncate_menu',
+	\ 	'converter_auto_delimiter',
+	\ ])
+'''
+
+[[plugins]]
+repo = 'ujihisa/neco-look'
+if = 'executable("look")'
+depends = 'deoplete.nvim'
+on_ft = ['markdown', 'text', 'gitcommit', 'gitrebase']
+
+[[plugins]]
+repo = 'Shougo/neco-syntax'
+depends = 'deoplete.nvim'
+on_source = 'deoplete.nvim'
+hook_post_source = '''
+	call deoplete#custom#source('syntax', 'rank', 5000)
+'''
+
+[[plugins]]
+repo = 'Shougo/deoplete-lsp'
+if = 'g:false'
+depends = 'deoplete.nvim'
+on_source = 'deoplete.nvim'
+
+[[plugins]]
+repo = 'autozimu/LanguageClient-neovim'
+if = 'g:false'
+rev = 'next'
+build = 'bash install.sh'
+depends = 'deoplete.nvim'
+on_source = 'deoplete.nvim'
+hook_source = '''
+	let g:LanguageClient_serverCommands = {}
+
+	if executable('go-langserver')
+		let g:LanguageClient_serverCommands.go = ['go-langserver', '-mode', 'stdio']
+	fi
+'''
+
+[[plugins]]
+repo = 'tyru/eskk.vim'
+on_map = {ic = '<plug>(eskk'}
+hook_add = '''
+	imap <c-j> <plug>(eskk:toggle)
+	cmap <c-j> <plug>(eskk:toggle)
+	let g:eskk#directory = expand('$DATA/eskk')
+'''
+hook_source = '''
+	let g:eskk#dictionary = {}
+	let g:eskk#dictionary.encoding = 'utf-8'
+	let g:eskk#dictionary.sorted = 0
+	let g:eskk#dictionary.path = expand(g:eskk#directory . '/SKK-JISYO.user')
+
+	if filereadable('/usr/share/skk/SKK-JISYO.L')
+		let g:eskk#large_dictionary = {}
+		let g:eskk#large_dictionary.encoding = 'euc-jp'
+		let g:eskk#large_dictionary.sorted = 1
+		let g:eskk#large_dictionary.path = '/usr/share/skk/SKK-JISYO.L'
+	endif
+
+	" Use <> instead of ▽.
+	let g:eskk#marker_henkan = '<>'
+	" Use >> instead of ▼.
+	let g:eskk#marker_henkan_select = '>>'
+
+	" 指定した文字数が入力されるまで補完しない
+	let g:eskk#start_completion_length = 2
+
+	" <Tab> キーで次の候補を選択
+	let g:eskk#tab_select_completion = g:true
+
+	" 候補が1つの場合確定
+	let g:eskk#kakutei_when_unique_candidate = g:true
+
+	" TODO: 整理
+	let g:eskk#egg_like_newline = g:true
+	let g:eskk#egg_like_newline_completion = g:true
+	let g:eskk#keep_state = g:false
+	let g:eskk#show_annotation = g:true
+
+	if has('channel') || dein#is_sourced('vimproc.vim')
+		let g:eskk#server = {}
+		let g:eskk#server.host = 'localhost'
+		let g:eskk#server.port = 1178
+	endif
+'''
+
+[[plugins]]
+repo = 'Shougo/vimproc.vim'
+if = '!has("channel")'
+build = 'make'
+on_source = 'eskk.vim'

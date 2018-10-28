@@ -1,0 +1,195 @@
+[[plugins]]
+repo = 'lambdalisue/gina.vim'
+if = 'executable("git")'
+on_cmd = 'Gina'
+hook_add = '''
+	nnoremap [git] <Nop>
+	nmap [Space]g [git]
+
+	nnoremap <silent>[git]B :<C-u>Gina branch -a<CR>
+	nnoremap <silent>[git]cm :<C-u>Gina commit<CR>
+	nnoremap <silent>[git]s :<C-u>Gina status -s<CR>
+	nnoremap <silent>[git]l :<C-u>Gina log<CR>
+'''
+hook_post_source = '''
+	" branch
+	call gina#custom#mapping#nmap('branch', 'n', '<Plug>(gina-branch-new)')
+	" blame/log preview
+	call gina#custom#action#alias('/\%(blame\|log\)', 'preview', 'botright show:commit:preview')
+	call gina#custom#mapping#nmap('/\%(blame\|log\)', 'p', ':<C-u>call gina#action#call(''preview'')<CR>', {'noremap': 1, 'silent': 1})
+
+	" opener
+	call gina#custom#command#option('/\%(status\|changes\|ls\|commit\)', '--opener', 'botright split')
+	call gina#custom#command#option('/\%(diff\|blame\|compare\|patch\|log\)', '--opener', 'tabedit')
+'''
+
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+if = 'has("python3")'
+on_cmd = 'Denite'
+hook_add = '''
+	nnoremap [denite] <Nop>
+	nmap [Space]d [denite]
+
+	nnoremap <silent> [denite]b :<C-u>Denite buffer<CR>
+	nnoremap <silent> [denite]f :<C-u>Denite file/rec -mode=normal<CR>
+	nnoremap <silent> [denite]g :<C-u>Denite grep<CR>
+
+	" 以前のバッファを再表示する
+	nnoremap <silent> [denite]r :<C-u>Denite -resume<CR>
+	" 以前のバッファで次の候補を即座に開く
+	nnoremap <silent> [denite]n :<C-u>Denite -resume -immediately -cursor-pos=+1 <CR>
+	" 以前のバッファで前の候補を即座に開く
+	nnoremap <silent> [denite]p :<C-u>Denite -resume -immediately -cursor-pos=-1<CR>
+'''
+hook_post_source = '''
+	" Change default prompt
+	call denite#custom#option('default', 'prompt', '>')
+
+	" カーソルキーで移動
+	call denite#custom#map('normal', '<Up>', '<denite:move_to_previous_line>', 'noremap')
+	call denite#custom#map('insert', '<Up>', '<denite:move_to_previous_line>', 'noremap')
+	call denite#custom#map('normal', '<Down>', '<denite:move_to_next_line>', 'noremap')
+	call denite#custom#map('insert', '<Down>', '<denite:move_to_next_line>', 'noremap')
+	" <C-t>: tabopen
+	call denite#custom#map('insert', "<C-t>", '<denite:do_action:tabopen>')
+
+	" file/rec {{{
+
+	if executable('fd')
+		" fd --follow --hidden --exclude '.git' --type f
+		call denite#custom#var('file/rec', 'command', ['fd', '--follow', '--hidden', '--exclude', '.git', '--type', 'f', ''])
+	elseif executable('rg')
+		call denite#custom#var('file/rec', 'command', ['rg', '--files', '--hidden', '--glob', '!.git'])
+	endif
+
+	" }}}
+	" grep {{{
+
+	if executable('rg')
+		call denite#custom#var('grep', 'command', ['rg'])
+		call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+		call denite#custom#var('grep', 'recursive_opts', [])
+		call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+		call denite#custom#var('grep', 'separator', ['--'])
+		call denite#custom#var('grep', 'final_opts', [])
+	elseif executable('pt')
+		call denite#custom#var('grep', 'command', ['pt'])
+		call denite#custom#var('grep', 'default_opts', ['--nogroup', '--nocolor', '--smart-case'])
+		call denite#custom#var('grep', 'recursive_opts', [])
+		call denite#custom#var('grep', 'pattern_opt', [])
+		call denite#custom#var('grep', 'separator', ['--'])
+		call denite#custom#var('grep', 'final_opts', [])
+	endif
+
+	" }}}
+	" menu {{{
+	let s:menus = {}
+
+	let s:menus.file = {}
+	let s:menus.file.description = 'File search (buffer, file, file_rec, file_mru'
+	let s:menus.file.command_candidates = [
+	\ ['buffer', 'Denite buffer'],
+	\ ['file: Files in the current directory', 'Denite file'],
+	\ ['file_rec: Files, recursive list under the current directory', 'Denite file_rec'],
+	\ ['file_mru: Most recently used files', 'Denite file_mru']
+	\ ]
+
+	let s:menus.line = {}
+	let s:menus.line.description = 'Line search (change, grep, line, tag'
+	let s:menus.line.command_candidates = [
+	\ ['change', 'Denite change'],
+	\ ['grep :grep', 'Denite grep'],
+	\ ['line', 'Denite line'],
+	\ ['tag', 'Denite tag']
+	\ ]
+
+	let s:menus.others = {}
+	let s:menus.others.description = 'Others (command, command_history, help)'
+	let s:menus.others.command_candidates = [
+	\ ['command', 'Denite command'],
+	\ ['command_history', 'Denite command_history'],
+	\ ['help', 'Denite help']
+	\ ]
+
+	call denite#custom#var('menu', 'menus', s:menus)
+	" }}}
+'''
+
+[[plugins]]
+repo = 'raghur/fruzzy'
+rev = 'v0.4'
+on_source = 'denite.nvim'
+hook_add = '''
+	let g:fruzzy#usenative = g:true
+'''
+hook_post_source = '''
+	call denite#custom#source('_', 'matchers', ['matcher/fruzzy'])
+'''
+hook_post_update = '''
+	call fruzzy#install()
+'''
+
+[[plugins]]
+repo ='Shougo/defx.nvim'
+depends = 'denite.nvim'
+on_cmd = 'Defx'
+hook_add = '''
+	nnoremap <silent> [Space]f :<C-u>Defx -split=vertical -direction=topleft -winwidth=40<CR>
+'''
+hook_source = '''
+	" Define mappings
+	function! s:defx_my_settings() abort
+		nnoremap <silent><buffer><expr> <CR>
+			\ defx#do_action('open')
+		nnoremap <silent><buffer><expr> h
+			\ defx#do_action('cd', ['..'])
+		nnoremap <silent><buffer><expr> j
+			\ line('.') == line('$') ? 'gg' : 'j'
+		nnoremap <silent><buffer><expr> k
+			\ line('.') == 1 ? 'G' : 'k'
+		nnoremap <silent><buffer><expr> l
+			\ defx#do_action('open')
+		nnoremap <silent><buffer><expr> ~
+			\ defx#do_action('cd')
+
+		nnoremap <silent><buffer><expr> c
+			\ defx#do_action('copy')
+		nnoremap <silent><buffer><expr> m
+			\ defx#do_action('move')
+		nnoremap <silent><buffer><expr> p
+			\ defx#do_action('paste')
+		nnoremap <silent><buffer><expr> E
+			\ defx#do_action('open', 'vsplit')
+		nnoremap <silent><buffer><expr> P
+			\ defx#do_action('open', 'pedit')
+		nnoremap <silent><buffer><expr> K
+			\ defx#do_action('new_directory')
+		nnoremap <silent><buffer><expr> N
+			\ defx#do_action('new_file')
+		nnoremap <silent><buffer><expr> d
+			\ defx#do_action('remove_trash')
+		nnoremap <silent><buffer><expr> r
+			\ defx#do_action('rename')
+
+		nnoremap <silent><buffer><expr> x
+			\ defx#do_action('execute_system')
+		nnoremap <silent><buffer><expr> .
+			\ defx#do_action('toggle_ignored_files')
+		nnoremap <silent><buffer><expr> q
+			\ defx#do_action('quit')
+
+		nnoremap <silent><buffer><expr> <Space>
+			\ defx#do_action('toggle_select') . 'j'
+		nnoremap <silent><buffer><expr> *
+			\ defx#do_action('toggle_select_all')
+		nnoremap <silent><buffer><expr> <C-l>
+			\ defx#do_action('redraw')
+		nnoremap <silent><buffer><expr> <C-g>
+			\ defx#do_action('print')
+
+		nnoremap <silent><buffer><expr> <Tab> winnr('$') != 1 ?
+			\ ':<C-u>wincmd w<CR>' : ':<C-u>Defx -new -split=vertical<CR>'
+	endfunction
+	autocmd MyAutoCmd FileType defx call s:defx_my_settings()
+'''

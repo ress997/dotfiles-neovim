@@ -1,0 +1,75 @@
+[[plugins]]
+repo = 'cocopon/iceberg.vim'
+hook_add = '''
+	autocmd MyAutoCmd VimEnter * nested colorscheme iceberg
+'''
+
+[[plugins]] # 折りたたみを改善
+repo = 'LeafCage/foldCC.vim'
+hook_add = '''
+	set foldtext=FoldCCtext()
+'''
+
+[[plugins]] # 対応括弧のハイライトを改善
+repo = 'itchyny/vim-parenmatch'
+on_ft = '.*'
+hook_add = '''
+	let g:loaded_matchparen = g:true
+'''
+
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+	" 現在のモードを表示しない
+	set noshowmode
+	" ステータス行を常に表示
+	set laststatus=2
+	" タブページを常に表示
+	set showtabline=2
+
+	let g:lightline = {'colorscheme': 'iceberg'}
+	let g:lightline.active = {}
+	let g:lightline.active.left = [['mode', 'paste'], ['filename'], ['skk']]
+	let g:lightline.active.right = [['filetype'], ['fileencoding', 'indent'], ['percent']]
+	let g:lightline.component_function = {}
+	let g:lightline.my = {}
+
+	let g:lightline.component_function.filetype = 'g:lightline.my.filetype'
+	function! g:lightline.my.filetype() abort
+		return (strlen(&filetype) ? &filetype : 'No ft')
+	endfunction
+
+	let g:lightline.component_function.indent = 'g:lightline.my.indent'
+	function! g:lightline.my.indent() abort
+		if &expandtab
+			let s:indent = winwidth('.') >= 70 ? 'Space' : 'S'
+		else
+			let s:indent =  winwidth('.') >= 70 ? 'Tab' : 'T'
+		endif
+		return s:indent . ':' . &shiftwidth
+	endfunction
+
+	let g:lightline.component_function.skk = 'g:lightline.my.skkmode'
+	function! g:lightline.my.skkmode() abort
+		if dein#is_sourced('eskk.vim') && eskk#is_enabled()
+			return get(g:eskk#statusline_mode_strings, eskk#get_current_instance().mode, '??')
+		else
+			return ''
+		endif
+	endfunction
+'''
+
+[[plugins]]
+repo = 'mgee/lightline-bufferline'
+depends = 'lightline.vim'
+hook_add = '''
+	" バッファ番号を表示
+	let g:lightline#bufferline#show_number = 1
+	" 絵文字を使用
+	let g:lightline#bufferline#unicode_symbols = 1
+'''
+hook_source = '''
+	let g:lightline.tabline = {'left': [['buffers']], 'right': [['close']]}
+	let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+	let g:lightline.component_type = {'buffers': 'tabsel'}
+'''

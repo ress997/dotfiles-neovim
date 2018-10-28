@@ -1,0 +1,43 @@
+[[plugins]] # CSS3
+repo = 'hail2u/vim-css3-syntax'
+
+# HTML {{{
+
+[[plugins]] # HTML5
+repo  = 'othree/html5.vim'
+
+[[plugins]] # Haml
+repo  = 'tpope/vim-haml'
+
+[[plugins]] # Amber
+repo = 'burner/amber.vim'
+
+# }}}
+# JavaScript {{{
+
+[[plugins]]
+repo = 'jelera/vim-javascript-syntax'
+
+[[plugins]] # CoffeeScript
+repo = 'kchmck/vim-coffee-script'
+
+# Elm {{{
+
+[[plugins]]
+repo = 'elmcast/elm-vim'
+
+[[plugins]]
+repo = 'pbogut/deoplete-elm'
+if = 'executable("elm-oracle")'
+depends = 'deoplete.nvim'
+on_ft = 'elm'
+
+# }}}
+
+[[plugins]] # TypeScript
+repo = 'leafgarland/typescript-vim'
+
+[[plugins]] # npm
+repo = 'rhysd/npm-filetypes.vim'
+
+# }}}
