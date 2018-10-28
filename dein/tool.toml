@@ -117,28 +117,15 @@ hook_post_source = '''
 '''
 
 [[plugins]]
-repo = 'raghur/fruzzy'
-rev = 'v0.4'
-on_source = 'denite.nvim'
-hook_add = '''
-	let g:fruzzy#usenative = g:true
-'''
-hook_post_source = '''
-	call denite#custom#source('_', 'matchers', ['matcher/fruzzy'])
-'''
-hook_post_update = '''
-	call fruzzy#install()
-'''
-
-[[plugins]]
 repo ='Shougo/defx.nvim'
 depends = 'denite.nvim'
 on_cmd = 'Defx'
 hook_add = '''
-	nnoremap <silent> [Space]f :<C-u>Defx -split=vertical -direction=topleft -winwidth=40<CR>
+	nnoremap <silent> [Space]f :<C-u>Defx -split=vertical -direction=topleft -winwidth=30<CR>
 '''
 hook_source = '''
 	" Define mappings
+	autocmd MyAutoCmd FileType defx call s:defx_my_settings()
 	function! s:defx_my_settings() abort
 		nnoremap <silent><buffer><expr> <CR>
 			\ defx#do_action('open')
@@ -191,5 +178,4 @@ hook_source = '''
 		nnoremap <silent><buffer><expr> <Tab> winnr('$') != 1 ?
 			\ ':<C-u>wincmd w<CR>' : ':<C-u>Defx -new -split=vertical<CR>'
 	endfunction
-	autocmd MyAutoCmd FileType defx call s:defx_my_settings()
 '''
