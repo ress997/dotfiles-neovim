@@ -1,0 +1,133 @@
+# 補完
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+depends = 'context_filetype.vim'
+on_event = 'InsertEnter'
+hook_add = '''
+	" 補完のオプション
+	set completeopt=menu,menuone,noinsert,noselect
+	" 補完の表示項目数
+	set pumheight=10
+	" ins-completion-menu 関連のメッセージを表示しない
+	set shortmess+=c
+
+	set isfname-==
+'''
+hook_source = '''
+	" <TAB>: completion.
+	inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#manual_complete()
+	function! s:check_back_space() abort
+		let col = col('.') - 1
+		return !col || getline('.')[col - 1]  =~ '\s'
+	endfunction
+
+	" <S-TAB>: completion back.
+	inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+	inoremap <expr><C-g> deoplete#refresh()
+
+	" <CR>: close popup and save indent.
+	inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+	function! s:my_cr_function() abort
+		return pumvisible() ? deoplete#close_popup()."\<CR>" : "\<CR>"
+	endfunction
+
+	" converters
+	call deoplete#custom#source('_', 'converters', [
+	\	'converter_remove_paren',
+	\ 	'converter_remove_overlap',
+	\ 	'matcher_length',
+	\ 	'converter_truncate_abbr',
+	\ 	'converter_truncate_menu',
+	\ 	'converter_auto_delimiter',
+	\ ])
+
+	call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy', 'matcher_length'])
+	"call deoplete#custom#source('eskk', 'matchers', [])
+
+	call deoplete#custom#option('ignore_sources', {'_': ['around', 'buffer', 'tag', 'dictionary']})
+
+call deoplete#custom#option('candidate_marks', ['A', 'S', 'D', 'F', 'G'])
+inoremap <expr>A deoplete#insert_candidate(0)
+inoremap <expr>S deoplete#insert_candidate(1)
+inoremap <expr>D deoplete#insert_candidate(2)
+inoremap <expr>F deoplete#insert_candidate(3)
+inoremap <expr>G deoplete#insert_candidate(4)
+
+call deoplete#enable()
+'''
+
+[[plugins]]
+repo = 'ujihisa/neco-look'
+if = 'executable("look")'
+depends = 'deoplete.nvim'
+hook_source = '''
+	call deoplete#custom#source('look', 'filetypes', ['markdown', 'text', 'gitcommit', 'gitrebase'])
+'''
+
+[[plugins]]
+repo = 'Shougo/neco-syntax'
+depends = 'deoplete.nvim'
+on_source = 'deoplete.nvim'
+hook_post_source = '''
+	call deoplete#custom#source('syntax', 'rank', 5000)
+'''
+
+[[plugins]]
+repo = 'tbodt/deoplete-tabnine'
+build = './install.sh'
+depends = 'deoplete.nvim'
+on_source = 'deoplete.nvim'
+hook_post_source = '''
+	call deoplete#custom#source('tabnine', 'rank', 300)
+	call deoplete#custom#source('tabnine', 'min_pattern_length', 2)
+'''
+
+[[plugins]]
+repo = 'autozimu/LanguageClient-neovim'
+if = 'g:false'
+rev = 'next'
+build = 'bash install.sh'
+depends = 'deoplete.nvim'
+on_source = 'deoplete.nvim'
+hook_source = '''
+'''
+
+# 日本語入力
+[[plugins]]
+repo = 'tyru/eskk.vim'
+on_map = {ic = '<plug>(eskk'}
+hook_add = '''
+	imap <c-j> <plug>(eskk:toggle)
+	cmap <c-j> <plug>(eskk:toggle)
+	let g:eskk#directory = expand('$DATA/eskk')
+'''
+hook_source = '''
+	" 辞書
+	let g:eskk#dictionary = {'encoding': 'utf-8', 'sorted': 0, 'path': expand(g:eskk#directory . '/SKK-JISYO.eskk')}
+	if filereadable(expand('$DATA/skk/SKK-JISYO.L'))
+		let g:eskk#large_dictionary = {'encoding': 'utf-8', 'sorted': 1, 'path': expand('$DATA/skk/SKK-JISYO.L')}
+	endif
+	let g:eskk#server = {'host': 'localhost', 'port': 1178}
+
+	" マーカー
+	let g:eskk#marker_henkan = '<>'
+	let g:eskk#marker_henkan_select = '>>'
+
+	" 指定した文字数が入力されるまで補完しない
+	let g:eskk#start_completion_length = 2
+
+	" <Tab> キーで次の候補を選択
+	let g:eskk#tab_select_completion = g:true
+
+	" 候補が1つの場合確定
+	let g:eskk#kakutei_when_unique_candidate = g:true
+
+	" TODO: 整理
+	let g:eskk#egg_like_newline = g:true
+	let g:eskk#egg_like_newline_completion = g:true
+	let g:eskk#keep_state = g:false
+	let g:eskk#show_annotation = g:true
+
+	autocmd MyAutoCmd User eskk-initialize-post EskkMap -remap jj <ESC>
+'''
