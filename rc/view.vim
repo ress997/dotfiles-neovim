@@ -1,6 +1,8 @@
 " 背景を黒ベースに
 set background=dark
 
+colorscheme iceberg
+
 " 行番号を表示する
 set number
 

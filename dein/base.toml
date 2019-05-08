@@ -1,8 +1,24 @@
 [[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
 repo = 'cocopon/iceberg.vim'
-hook_add = '''
-	autocmd MyAutoCmd VimEnter * nested colorscheme iceberg
-'''
+
+[[plugins]]
+repo = 'Shougo/context_filetype.vim'
+
+[[plugins]]
+repo = 'vim-jp/vimdoc-ja'
+hook_add = 'set helplang=ja,en'
+
+[[plugins]]
+repo = 'sheerun/vim-polyglot'
+
+[[plugins]] # vim
+repo = 'vim-jp/syntax-vim-ex'
+
+[[plugins]] # zsh
+repo = 'chrisbra/vim-zsh'
 
 [[plugins]] # 折りたたみを改善
 repo = 'LeafCage/foldCC.vim'
@@ -12,10 +28,13 @@ hook_add = '''
 
 [[plugins]] # 対応括弧のハイライトを改善
 repo = 'itchyny/vim-parenmatch'
-on_ft = '.*'
 hook_add = '''
 	let g:loaded_matchparen = g:true
 '''
+
+[[plugins]]
+repo = 'mengelbrecht/lightline-bufferline'
+depends = 'lightline.vim'
 
 [[plugins]]
 repo = 'itchyny/lightline.vim'
@@ -57,19 +76,13 @@ hook_add = '''
 			return ''
 		endif
 	endfunction
-'''
 
-[[plugins]]
-repo = 'mengelbrecht/lightline-bufferline'
-depends = 'lightline.vim'
-hook_add = '''
+	" bufferline
+	let g:lightline.tabline = {'left': [['buffers']], 'right': [['close']]}
+	let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+	let g:lightline.component_type = {'buffers': 'tabsel'}
 	" バッファ番号を表示
 	let g:lightline#bufferline#show_number = 1
 	" 絵文字を使用
 	let g:lightline#bufferline#unicode_symbols = 1
-'''
-hook_source = '''
-	let g:lightline.tabline = {'left': [['buffers']], 'right': [['close']]}
-	let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
-	let g:lightline.component_type = {'buffers': 'tabsel'}
 '''
