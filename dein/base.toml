@@ -5,7 +5,11 @@ repo = 'Shougo/dein.vim'
 repo = 'cocopon/iceberg.vim'
 
 [[plugins]]
-repo = 'Shougo/context_filetype.vim'
+repo = 'Shougo/neco-syntax'
+
+[[plugins]]
+repo = 'tbodt/deoplete-tabnine'
+build = './install.sh'
 
 [[plugins]]
 repo = 'vim-jp/vimdoc-ja'
@@ -20,6 +24,8 @@ repo = 'vim-jp/syntax-vim-ex'
 [[plugins]] # zsh
 repo = 'chrisbra/vim-zsh'
 
+# ------
+
 [[plugins]] # 折りたたみを改善
 repo = 'LeafCage/foldCC.vim'
 hook_add = '''
@@ -32,12 +38,14 @@ hook_add = '''
 	let g:loaded_matchparen = g:true
 '''
 
+# ------
+
 [[plugins]]
 repo = 'mengelbrecht/lightline-bufferline'
-depends = 'lightline.vim'
 
 [[plugins]]
 repo = 'itchyny/lightline.vim'
+depends = ['lightline-bufferline']
 hook_add = '''
 	" 現在のモードを表示しない
 	set noshowmode

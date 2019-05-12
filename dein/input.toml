@@ -39,6 +39,9 @@ hook_source = '''
 # }}}
 
 [[plugins]]
+repo = 'Shougo/context_filetype.vim'
+
+[[plugins]]
 repo = 'Shougo/deoplete.nvim'
 depends = 'context_filetype.vim'
 on_event = 'InsertEnter'
@@ -88,21 +91,3 @@ hook_source = '''
 
 call deoplete#enable()
 '''
-
-[[plugins]]
-repo = 'Shougo/neco-syntax'
-depends = 'deoplete.nvim'
-
-[[plugins]]
-repo = 'tbodt/deoplete-tabnine'
-build = './install.sh'
-
-# LSP {{{
-[[plugins]]
-repo = 'autozimu/LanguageClient-neovim'
-if = 'g:false'
-rev = 'next'
-build = 'bash install.sh'
-depends = 'deoplete.nvim'
-on_source = 'deoplete.nvim'
-# }}}
