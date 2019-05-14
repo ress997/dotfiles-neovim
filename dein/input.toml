@@ -65,6 +65,7 @@ hook_source = '''
 	" <S-TAB>: completion back.
 	inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
+	" <C-g>:
 	inoremap <expr><C-g> deoplete#refresh()
 
 	" <CR>: close popup and save indent.
@@ -88,5 +89,13 @@ hook_source = '''
 
 	call deoplete#custom#option('ignore_sources', {'_': ['around', 'buffer', 'tag', 'dictionary']})
 
-call deoplete#enable()
+	call deoplete#custom#option({
+			\ 'auto_refresh_delay': 10,
+			\ 'camel_case': v:true,
+			\ 'skip_multibyte': v:true,
+			\ 'prev_completion_mode': 'none',
+			\ 'auto_preview': v:true,
+			\ })
+
+	call deoplete#enable()
 '''

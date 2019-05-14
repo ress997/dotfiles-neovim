@@ -168,14 +168,23 @@ hook_add = '''
 # denite {{{
 [[plugins]]
 repo = 'Shougo/denite.nvim'
-if = 'has("python3")'
+rev = 'ui'
 on_cmd = 'Denite'
 hook_add = '''
 	nnoremap [denite] <Nop>
-	nmap [Space]d [denite]
+	nmap <Space>d [denite]
+
 	nnoremap <silent> [denite]b :<C-u>Denite buffer<CR>
-	nnoremap <silent> [denite]f :<C-u>Denite file/rec -mode=normal<CR>
-	nnoremap <silent> [denite]g :<C-u>Denite grep<CR>
+	nnoremap <silent> [denite]f :<C-u>Denite file/rec<CR>
+	nnoremap <silent> [denite]g :<C-u>Denite Denite -buffer-name=search -no-empty grep<CR>
+
+	nnoremap <silent> ft :<C-u>Denite filetype<CR>
+	nnoremap <silent> ;; :<C-u>Denite command command_history<CR>
+
+	nnoremap <expr> / line('$') > 10000 ? '/' : ":\<C-u>Denite -buffer-name=search -start-filter line\<CR>"
+	nnoremap <expr> n line('$') > 10000 ? 'n' : ":\<C-u>Denite -buffer-name=search -resume -refresh -no-start-filter\<CR>"
+	nnoremap <expr> * line('$') > 10000 ? '*' : ":\<C-u>DeniteCursorWord -buffer-name=search line\<CR>"
+
 	" 以前のバッファを再表示する
 	nnoremap <silent> [denite]r :<C-u>Denite -resume<CR>
 	" 以前のバッファで次の候補を即座に開く
@@ -184,66 +193,50 @@ hook_add = '''
 	nnoremap <silent> [denite]p :<C-u>Denite -resume -immediately -cursor-pos=-1<CR>
 '''
 hook_post_source = '''
-	" Change default prompt
-	call denite#custom#option('default', 'prompt', '>')
-	" カーソルキーで移動
-	call denite#custom#map('normal', '<Up>', '<denite:move_to_previous_line>', 'noremap')
-	call denite#custom#map('insert', '<Up>', '<denite:move_to_previous_line>', 'noremap')
-	call denite#custom#map('normal', '<Down>', '<denite:move_to_next_line>', 'noremap')
-	call denite#custom#map('insert', '<Down>', '<denite:move_to_next_line>', 'noremap')
-	" <C-t>: tabopen
-	call denite#custom#map('insert', "<C-t>", '<denite:do_action:tabopen>')
-	" file/rec {{{
+	" file/rec
 	if executable('fd')
 		" fd --follow --hidden --exclude '.git' --type f
 		call denite#custom#var('file/rec', 'command', ['fd', '--follow', '--hidden', '--exclude', '.git', '--type', 'f', ''])
 	elseif executable('rg')
-		call denite#custom#var('file/rec', 'command', ['rg', '--files', '--hidden', '--glob', '!.git'])
+		call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
 	endif
-	" }}}
-	" grep {{{
+	call denite#custom#source('file/rec', 'matchers', ['matcher/fruzzy'])
+
+	" file/rec/git
+	call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+	call denite#custom#var('file/rec/git', 'command', ['git', 'ls-files', '-co', '--exclude-standard'])
+
+	" grep
 	if executable('rg')
 		call denite#custom#var('grep', 'command', ['rg'])
-		call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+		call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep', '--no-heading'])
 		call denite#custom#var('grep', 'recursive_opts', [])
 		call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
 		call denite#custom#var('grep', 'separator', ['--'])
 		call denite#custom#var('grep', 'final_opts', [])
 	elseif executable('pt')
 		call denite#custom#var('grep', 'command', ['pt'])
-		call denite#custom#var('grep', 'default_opts', ['--nogroup', '--nocolor', '--smart-case'])
+		call denite#custom#var('grep', 'default_opts', ['-i', '--nogroup', '--nocolor', '--smart-case'])
 		call denite#custom#var('grep', 'recursive_opts', [])
 		call denite#custom#var('grep', 'pattern_opt', [])
 		call denite#custom#var('grep', 'separator', ['--'])
 		call denite#custom#var('grep', 'final_opts', [])
 	endif
-	" }}}
-	" menu {{{
-	let s:menus = {}
-	let s:menus.file = {}
-	let s:menus.file.description = 'File search (buffer, file, file_rec, file_mru'
-	let s:menus.file.command_candidates = [
-	\ ['buffer', 'Denite buffer'],
-	\ ['file: Files in the current directory', 'Denite file'],
-	\ ['file_rec: Files, recursive list under the current directory', 'Denite file_rec'],
-	\ ['file_mru: Most recently used files', 'Denite file_mru']
-	\ ]
-	let s:menus.line = {}
-	let s:menus.line.description = 'Line search (change, grep, line, tag'
-	let s:menus.line.command_candidates = [
-	\ ['change', 'Denite change'],
-	\ ['grep :grep', 'Denite grep'],
-	\ ['line', 'Denite line'],
-	\ ['tag', 'Denite tag']
-	\ ]
-	let s:menus.others = {}
-	let s:menus.others.description = 'Others (command, command_history, help)'
-	let s:menus.others.command_candidates = [
-	\ ['command', 'Denite command'],
-	\ ['command_history', 'Denite command_history'],
-	\ ['help', 'Denite help']
-	\ ]
-	call denite#custom#var('menu', 'menus', s:menus)
-	" }}}
+
+	call denite#custom#option('default', {
+			\ 'auto_accel': v:true,
+			\ 'prompt': '>',
+			\ 'source_names': 'short',
+			\ 'split': 'floating',
+			\ })
+'''
+[plugins.ftplugin]
+denite = '''
+	nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
+	nnoremap <silent><buffer><expr> d denite#do_map('do_action', 'delete')
+	nnoremap <silent><buffer><expr> p denite#do_map('do_action', 'preview')
+	nnoremap <silent><buffer><expr> q denite#do_map('quit')
+	nnoremap <silent><buffer><expr> i denite#do_map('open_filter_buffer')
+	nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
 '''
 # }}}
