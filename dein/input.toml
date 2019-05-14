@@ -1,10 +1,9 @@
 # SKK {{{
 [[plugins]]
 repo = 'tyru/eskk.vim'
-on_map = {ic = '<plug>(eskk'}
+on_map = {i = '<plug>(eskk'}
 hook_add = '''
 	imap <c-j> <plug>(eskk:toggle)
-	cmap <c-j> <plug>(eskk:toggle)
 	let g:eskk#directory = expand('$DATA/eskk')
 '''
 hook_source = '''
