@@ -36,7 +36,14 @@ hook_add = '''
 	vmap <C-v> <Plug>(expand_region_shrink)
 '''
 # }}}
-# LANG: Markdown {{{
+# LANG {{{
+
+## Golang
+[[plugins]]
+repo = 'fatih/vim-go'
+on_ft = 'go'
+
+## : Markdown
 [[plugins]]
 repo = 'rhysd/vim-gfm-syntax'
 on_ft = 'markdown'
@@ -62,21 +69,14 @@ hook_post_update = '!cd app && ./install.sh'
 on_cmd = 'MarkdownPreview'
 # }}}
 # EditorConfig {{{
-#[[plugins]]
-#repo = 'editorconfig/editorconfig-vim'
-#if = 'executable("editorconfig")'
+[[plugins]]
+repo = 'editorconfig/editorconfig-vim'
 #on_path = '.*'
 #hook_source = '''
-#	let g:EditorConfig_core_mode = 'external_command'
-#
 #	if dein#tap('gina.vim')
 #		let g:EditorConfig_exclude_patterns = ['gina://.*']
 #	endif
 #'''
-
-[[plugins]]
-repo = 'rakus/vimscript-editorconfig'
-on_path = '.*'
 # }}}
 # file {{{
 [[plugins]]
@@ -238,5 +238,9 @@ denite = '''
 	nnoremap <silent><buffer><expr> q denite#do_map('quit')
 	nnoremap <silent><buffer><expr> i denite#do_map('open_filter_buffer')
 	nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
+'''
+denite-filter = '''
+	inoremap <silent><buffer> <C-j> <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
+	inoremap <silent><buffer> <C-k> <Esc><C-w>p:call cursor(line('.')-1,0)<CR><C-w>pA
 '''
 # }}}

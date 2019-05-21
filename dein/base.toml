@@ -8,6 +8,9 @@ repo = 'cocopon/iceberg.vim'
 
 [[plugins]]
 repo = 'sheerun/vim-polyglot'
+hook_add = '''
+let g:polyglot_disabled = ['go']
+'''
 
 [[plugins]] # vim
 repo = 'vim-jp/syntax-vim-ex'
