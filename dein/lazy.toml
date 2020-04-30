@@ -1,0 +1,248 @@
+[[plugins]] # dein.vim command
+repo = 'haya14busa/dein-command.vim'
+on_cmd = 'Dein'
+
+# motion {{{
+[[plugins]] # 上下移動改善
+repo = 'rhysd/accelerated-jk'
+on_map = {n = '<Plug>(accelerated'}
+hook_add = '''
+	nmap j <Plug>(accelerated_jk_gj)
+	nmap k <Plug>(accelerated_jk_gk)
+'''
+
+[[plugins]] # Edge motion
+repo = 'haya14busa/vim-edgemotion'
+on_map = '<Plug>(edgemotion-'
+hook_add = '''
+	map <C-j> <Plug>(edgemotion-j)
+	map <C-k> <Plug>(edgemotion-k)
+'''
+
+[[plugins]] # word単位の移動改善
+repo = 'kana/vim-smartword'
+on_map = {n = '<Plug>(smartword-'}
+hook_add = '''
+	nmap w <Plug>(smartword-w)
+	nmap b <Plug>(smartword-b)
+	nmap e <Plug>(smartword-e)
+'''
+
+[[plugins]]
+repo = 'terryma/vim-expand-region'
+on_map = {v = '<Plug>(expand'}
+hook_add = '''
+	vmap v <Plug>(expand_region_expand)
+	vmap <C-v> <Plug>(expand_region_shrink)
+'''
+# }}}
+# LANG {{{
+## Golang
+[[plugins]]
+repo = 'mattn/vim-goimports'
+on_ft = 'go'
+
+## : Markdown
+[[plugins]]
+repo = 'rhysd/vim-gfm-syntax'
+on_ft = 'markdown'
+hook_source = '''
+	let g:markdown_fenced_languages = [
+	\	'html',
+	\	'css',
+	\	'scss',
+	\	'javascript',
+	\	'js=javascript',
+	\	'yaml',
+	\	'toml',
+	\	'zsh',
+	\]
+'''
+
+[[plugins]]
+repo = 'iamcco/markdown-preview.nvim'
+hook_post_update = '!cd app && ./install.sh'
+on_cmd = 'MarkdownPreview'
+# }}}
+# EditorConfig {{{
+[[plugins]]
+repo = 'editorconfig/editorconfig-vim'
+on_path = '.*'
+# }}}
+# file {{{
+[[plugins]]
+repo ='Shougo/defx.nvim'
+on_cmd = 'Defx'
+depends = ['defx-icons', 'defx-git']
+hook_add = '''
+	nnoremap <silent> <Space>f :<C-u>Defx -listed -resume -buffer-name=tab`tabpagenr()`<CR>
+'''
+hook_source = '''
+	function! Root(path) abort
+		return fnamemodify(a:path, ':t')
+	endfunction
+
+	call defx#custom#source('file', {
+			\ 'root': 'Root',
+			\})
+
+	call defx#custom#column('filename', {
+			\ 'directory_icon': '',
+			\ 'opened_icon': '',
+			\ })
+
+	call defx#custom#column('mark', {
+			\ 'readonly_icon': '✗',
+			\ 'selected_icon': '✓',
+			\ })
+
+	call defx#custom#option('_', {
+			\ 'columns': 'indent:git:icons:filename',
+			\ 'show_ignored_files': 1,
+			\ })
+'''
+[plugins.ftplugin]
+defx = '''
+	nnoremap <silent><buffer><expr> ~ defx#async_action('cd')
+	nnoremap <silent><buffer><expr> h defx#async_action('cd', ['..'])
+	nnoremap <silent><buffer><expr> j line('.') == line('$') ? 'gg' : 'j'
+	nnoremap <silent><buffer><expr> k line('.') == 1 ? 'G' : 'k'
+	nnoremap <silent><buffer><expr> l defx#async_action('open')
+
+	nnoremap <silent><buffer><expr> . defx#do_action('toggle_ignored_files')
+	nnoremap <silent><buffer><expr> <Tab> winnr('$') != 1 ? ':<C-u>wincmd w<CR>' : ':<C-u>Defx -buffer-name=temp -split=vertical<CR>'
+	nnoremap <silent><buffer><expr> <Space> defx#do_action('toggle_select') . 'j'
+	nnoremap <silent><buffer><expr> <CR> defx#do_action('open')
+	nnoremap <silent><buffer><expr> q defx#do_action('quit')
+
+	nnoremap <silent><buffer><expr> o defx#async_action('open_or_close_tree')
+	nnoremap <silent><buffer><expr> O defx#async_action('open_tree_recursive')
+
+	nnoremap <silent><buffer><expr> ! defx#do_action('execute_command')
+	nnoremap <silent><buffer><expr> * defx#do_action('toggle_select_all')
+	nnoremap <silent><buffer><expr> <C-g> defx#do_action('print')
+	nnoremap <silent><buffer><expr> <C-l> defx#do_action('redraw')
+	nnoremap <silent><buffer><expr> E defx#do_action('open', 'vsplit')
+	nnoremap <silent><buffer><expr> K defx#do_action('new_directory')
+	nnoremap <silent><buffer><expr> M defx#do_action('new_multiple_files')
+	nnoremap <silent><buffer><expr> N defx#do_action('new_file')
+	nnoremap <silent><buffer><expr> P defx#do_action('open', 'pedit')
+	nnoremap <silent><buffer><expr> S defx#do_action('toggle_sort', 'Time')
+	nnoremap <silent><buffer><expr> c defx#do_action('copy')
+	nnoremap <silent><buffer><expr> d defx#do_action('remove_trash')
+	nnoremap <silent><buffer><expr> m defx#do_action('move')
+	nnoremap <silent><buffer><expr> p defx#do_action('paste')
+	nnoremap <silent><buffer><expr> r defx#do_action('rename')
+	nnoremap <silent><buffer><expr> se defx#do_action('save_session')
+	nnoremap <silent><buffer><expr> sl defx#do_action('load_session')
+	nnoremap <silent><buffer><expr> x defx#do_action('execute_system')
+	nnoremap <silent><buffer><expr> yy defx#do_action('yank_path')
+'''
+
+[[plugins]]
+repo = 'kristijanhusak/defx-icons'
+hook_add = '''
+	let g:defx_icons_column_length = 2
+'''
+
+[[plugins]]
+repo ='kristijanhusak/defx-git'
+hook_add = '''
+	let g:defx_git#indicators = {
+		\ 'Modified'  : '+',
+		\ 'Staged'    : '●',
+		\ 'Untracked' : '?',
+		\ 'Renamed'   : '➜',
+		\ 'Unmerged'  : '═',
+		\ 'Deleted'   : 'x',
+		\ 'Unknown'   : '?'
+		\ }
+'''
+# }}}
+# denite {{{
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+on_cmd = 'Denite'
+hook_add = '''
+	nnoremap [denite] <Nop>
+	nmap <Space>d [denite]
+
+	nnoremap <silent> [denite]b :<C-u>Denite buffer<CR>
+	nnoremap <silent> [denite]f :<C-u>Denite file/rec<CR>
+	nnoremap <silent> [denite]g :<C-u>Denite Denite -buffer-name=search -no-empty grep<CR>
+
+	nnoremap <silent> ft :<C-u>Denite filetype<CR>
+	nnoremap <silent> ;; :<C-u>Denite command command_history<CR>
+
+	nnoremap <expr> / line('$') > 10000 ? '/' : ":\<C-u>Denite -buffer-name=search -start-filter line\<CR>"
+	nnoremap <expr> n line('$') > 10000 ? 'n' : ":\<C-u>Denite -buffer-name=search -resume -refresh -no-start-filter\<CR>"
+	nnoremap <expr> * line('$') > 10000 ? '*' : ":\<C-u>DeniteCursorWord -buffer-name=search line\<CR>"
+
+	" 以前のバッファを再表示する
+	nnoremap <silent> [denite]r :<C-u>Denite -resume<CR>
+	" 以前のバッファで次の候補を即座に開く
+	nnoremap <silent> [denite]n :<C-u>Denite -resume -immediately -cursor-pos=+1 <CR>
+	" 以前のバッファで前の候補を即座に開く
+	nnoremap <silent> [denite]p :<C-u>Denite -resume -immediately -cursor-pos=-1<CR>
+'''
+hook_post_source = '''
+	" file/rec
+	if executable('fd')
+		" fd --follow --hidden --exclude '.git' --type f
+		call denite#custom#var('file/rec', 'command', ['fd', '--follow', '--hidden', '--exclude', '.git', '--type', 'f', ''])
+	elseif executable('rg')
+		call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
+	endif
+	call denite#custom#source('file/rec', 'matchers', ['matcher/fruzzy'])
+
+	" file/rec/git
+	call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+	call denite#custom#var('file/rec/git', 'command', ['git', 'ls-files', '-co', '--exclude-standard'])
+
+	" grep
+	if executable('rg')
+		call denite#custom#var('grep', 'command', ['rg'])
+		call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep', '--no-heading'])
+		call denite#custom#var('grep', 'recursive_opts', [])
+		call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+		call denite#custom#var('grep', 'separator', ['--'])
+		call denite#custom#var('grep', 'final_opts', [])
+	elseif executable('pt')
+		call denite#custom#var('grep', 'command', ['pt'])
+		call denite#custom#var('grep', 'default_opts', ['-i', '--nogroup', '--nocolor', '--smart-case'])
+		call denite#custom#var('grep', 'recursive_opts', [])
+		call denite#custom#var('grep', 'pattern_opt', [])
+		call denite#custom#var('grep', 'separator', ['--'])
+		call denite#custom#var('grep', 'final_opts', [])
+	endif
+
+	call denite#custom#option('default', {
+			\ 'auto_accel': v:true,
+			\ 'prompt': '>',
+			\ 'source_names': 'short',
+			\ 'split': 'floating',
+			\ })
+'''
+[plugins.ftplugin]
+denite = '''
+	nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
+	nnoremap <silent><buffer><expr> d denite#do_map('do_action', 'delete')
+	nnoremap <silent><buffer><expr> p denite#do_map('do_action', 'preview')
+	nnoremap <silent><buffer><expr> q denite#do_map('quit')
+	nnoremap <silent><buffer><expr> i denite#do_map('open_filter_buffer')
+	nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
+'''
+denite-filter = '''
+	inoremap <silent><buffer> <C-j> <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
+	inoremap <silent><buffer> <C-k> <Esc><C-w>p:call cursor(line('.')-1,0)<CR><C-w>pA
+'''
+
+[[plugins]]
+repo = 'raghur/fruzzy'
+on_source = ['denite.nvim']
+hook_source = '''
+	let g:fruzzy#sortonempty = 0
+	let g:fruzzy#use_native = 1
+'''
+hook_post_update = 'call fruzzy#install()'
+# }}}
