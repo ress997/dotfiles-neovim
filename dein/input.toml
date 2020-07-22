@@ -22,16 +22,16 @@ hook_source = '''
 	let g:eskk#start_completion_length = 2
 
 	" <Tab> キーで次の候補を選択
-	let g:eskk#tab_select_completion = g:true
+	let g:eskk#tab_select_completion = v:true
 
 	" 候補が1つの場合確定
-	let g:eskk#kakutei_when_unique_candidate = g:true
+	let g:eskk#kakutei_when_unique_candidate = v:true
 
 	" TODO: 整理
-	let g:eskk#egg_like_newline = g:true
-	let g:eskk#egg_like_newline_completion = g:true
-	let g:eskk#keep_state = g:false
-	let g:eskk#show_annotation = g:true
+	let g:eskk#egg_like_newline = v:true
+	let g:eskk#egg_like_newline_completion = v:true
+	let g:eskk#keep_state = v:false
+	let g:eskk#show_annotation = v:true
 
 	autocmd MyAutoCmd User eskk-initialize-post EskkMap -remap jj <ESC>
 '''
@@ -59,7 +59,7 @@ hook_source = '''
 	inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#manual_complete()
 	function! s:check_back_space() abort
 		let col = col('.') - 1
-		return !col || getline('.')[col - 1]  =~ '\s'
+		return !col || getline('.')[col - 1]  =~# '\s'
 	endfunction
 
 	" <S-TAB>: completion back.
@@ -104,28 +104,24 @@ hook_source = '''
 '''
 
 # snipes {{{
-#[[plugins]]
-#repo = 'Shougo/deoppet.nvim'
-#depends = ['neosnippet-snippets', 'context_filetype.vim']
-#on_event = 'InsertCharPre'
-#hook_source = '''
-#	" Test
-#	imap <C-k>  <Plug>(deoppet_expand)
-#	imap <C-f>  <Plug>(deoppet_jump_forward)
-#	imap <C-b>  <Plug>(deoppet_jump_backward)
-#	call deoppet#custom#option('snippets_dirs',
-#		\ globpath(&runtimepath, 'neosnippets', 1, 1))
-#'''
-#
-#[[plugins]]
-#repo = 'Shougo/neosnippet-snippets'
-# }}}
+[[plugins]]
+repo = 'Shougo/deoppet.nvim'
+depends = ['neosnippet-snippets', 'context_filetype.vim']
+on_event = 'InsertEnter'
+hook_source = '''
+	imap <C-k>  <Plug>(deoppet_expand)
+	imap <expr> L  deoppet#expandable() ? "\<Plug>(deoppet_expand)" : ''
+	imap <C-f>  <Plug>(deoppet_jump_forward)
+	imap <C-b>  <Plug>(deoppet_jump_backward)
+	xmap <C-l>  <Plug>(deoppet_select_text)
+	xmap <C-x>  <Plug>(deoppet_cut_text)
+
+	call deoppet#initialize()
+	call deoppet#custom#option('snippets',
+		\ map(globpath(&runtimepath, 'neosnippets', 1, 1),
+		\     "{ 'path': v:val }"))
+'''
 
 [[plugins]]
-repo = 'ncm2/float-preview.nvim'
-on_source = 'deoplete.nvim'
-hook_source = '''
-	let g:float_preview#docked = 0
-	let g:float_preview#max_width = 60
-	let g:float_preview#max_height = 20
-'''
+repo = 'Shougo/neosnippet-snippets'
+# }}}

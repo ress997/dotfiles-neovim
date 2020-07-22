@@ -26,29 +26,20 @@ repo = 'chrisbra/vim-zsh'
 repo = 'vim-jp/vimdoc-ja'
 hook_add = 'set helplang=ja,en'
 
-[[plugins]]
-repo = 'Shougo/neco-syntax'
-
-[[plugins]]
-repo = 'tbodt/deoplete-tabnine'
-build = './install.sh'
-
-[[plugins]]
-repo = 'Shougo/deoplete-nextword'
-if = 'executable("nextword")'
-
 # ------
 
 [[plugins]] # 折りたたみを改善
 repo = 'LeafCage/foldCC.vim'
 hook_add = '''
-	set foldtext=FoldCCtext()
+	if &filetype !=# 'help'
+		setlocal foldtext=FoldCCtext()
+	endif
 '''
 
 [[plugins]] # 対応括弧のハイライトを改善
 repo = 'itchyny/vim-parenmatch'
 hook_add = '''
-	let g:loaded_matchparen = g:true
+	let g:loaded_matchparen = v:true
 '''
 
 # ------
@@ -101,7 +92,25 @@ hook_add = '''
 	let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
 	let g:lightline.component_type = {'buffers': 'tabsel'}
 	" バッファ番号を表示
-	let g:lightline#bufferline#show_number = 1
+	let g:lightline#bufferline#show_number = v:true
 	" 絵文字を使用
-	let g:lightline#bufferline#unicode_symbols = 1
+	let g:lightline#bufferline#unicode_symbols = v:true
 '''
+
+# ------
+
+[[plugins]]
+repo = 'Shougo/neco-syntax'
+
+[[plugins]]
+repo = 'tbodt/deoplete-tabnine'
+build = './install.sh'
+
+[[plugins]]
+repo = 'Shougo/deoplete-nextword'
+if = 'executable("nextword")'
+
+[[plugins]]
+repo = 'Jagua/vim-denite-ghq'
+if = 'executable("ghq")'
+on_source = 'denite.nvim'

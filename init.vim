@@ -8,8 +8,9 @@ let $CACHE = empty($XDG_CACHE_HOME) ? expand('$HOME/.cache') : $XDG_CACHE_HOME
 let $CONFIG = empty($XDG_CONFIG_HOME) ? expand('$HOME/.config') : $XDG_CONFIG_HOME
 let $DATA = empty($XDG_DATA_HOME) ? expand('$HOME/.local/share') : $XDG_DATA_HOME
 
-let g:false = 0
-let g:true = 1
+if filereadable(expand('~/.config/nvim/local.vim'))
+	source ~/.config/nvim/local.vim
+endif
 
 
 " init
@@ -23,17 +24,6 @@ if has('vim_starting')
 		let g:python3_host_prog = '/usr/local/bin/python3'
 	endif
 
-	if &runtimepath !~# '/dein.vim'
-		let s:dein_repo_dir = expand('$DATA/dein/repos/github.com/Shougo/dein.vim')
-
-		" Auto Download
-		if !isdirectory(s:dein_repo_dir)
-			execute '!git clone https://github.com/Shougo/dein.vim ' . s:dein_repo_dir
-		endif
-
-		execute 'set runtimepath^=' . s:dein_repo_dir
-	endif
-
 	" Disable packpath
 	set packpath=
 
@@ -43,17 +33,33 @@ if has('vim_starting')
 	let g:loaded_tarPlugin = 1
 	let g:loaded_zip = 1
 	let g:loaded_zipPlugin = 1
+
+	let g:loaded_python_provider = 0
 	let g:loaded_ruby_provider = 1
 	let g:loaded_node_provider = 1
 endif
 
 
 " plugins
+let g:dein#auto_recache = v:true
+let g:dein#lazy_rplugins = v:true
+let g:dein#enable_notification = v:true
 let g:dein#install_max_processes = 16
 let g:dein#install_message_type = 'none'
-let g:dein#enable_notification = g:true
+let g:dein#enable_notification = v:true
 
-let s:dein = {'dir': expand('$DATA/dein'), 'config': expand('$CONFIG/nvim/dein')}
+let s:dein = {'dir': expand('$CACHE/dein'), 'config': expand('$CONFIG/nvim/dein')}
+
+if has('vim_starting') && &runtimepath !~# '/dein.vim'
+	let s:dein_repo_dir = s:dein.dir . '/repos/github.com/Shougo/dein.vim'
+
+	" Auto Download
+	if !isdirectory(s:dein_repo_dir)
+		execute '!git clone https://github.com/Shougo/dein.vim ' . s:dein_repo_dir
+	endif
+
+	execute 'set runtimepath^=' . s:dein_repo_dir
+endif
 
 if dein#load_state(s:dein.dir)
 	let s:dein.toml = {
@@ -64,17 +70,17 @@ if dein#load_state(s:dein.dir)
 
 	call dein#begin(s:dein.dir, [expand('<sfile>'), s:dein.toml.base, s:dein.toml.lazy, s:dein.toml.input])
 
-	call dein#load_toml(s:dein.toml.base, {'lazy': 0})
-	call dein#load_toml(s:dein.toml.lazy, {'lazy': 1})
-	call dein#load_toml(s:dein.toml.input, {'lazy': 1})
+	call dein#load_toml(s:dein.toml.base, {'lazy': v:false})
+	call dein#load_toml(s:dein.toml.lazy, {'lazy': v:true})
+	call dein#load_toml(s:dein.toml.input, {'lazy': v:true})
 
 	call dein#end()
 	call dein#save_state()
+endif
 
-	if !has('vim_starting') && dein#check_install()
-		" Installation check.
-		call dein#install()
-	endif
+" Installation check.
+if dein#check_install()
+	call dein#install()
 endif
 
 
