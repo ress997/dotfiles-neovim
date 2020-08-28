@@ -11,6 +11,7 @@ autocmd MyAutoCmd VimEnter * nested colorscheme iceberg
 
 [[plugins]]
 repo = 'sheerun/vim-polyglot'
+merged = 0
 hook_add = '''
 let g:polyglot_disabled = ['markdown']
 '''
