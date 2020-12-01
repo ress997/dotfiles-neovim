@@ -15,15 +15,6 @@ endif
 
 " init
 if has('vim_starting')
-	" Python 3
-	if executable('/usr/bin/python3')
-		let g:python3_host_prog = '/usr/bin/python3'
-	elseif executable($PYENV_ROOT . '/shims/python3')
-		let g:python3_host_prog = $PYENV_ROOT . '/shims/python3'
-	elseif executable('/usr/local/bin/python3')
-		let g:python3_host_prog = '/usr/local/bin/python3'
-	endif
-
 	" Disable packpath
 	set packpath=
 
@@ -34,9 +25,28 @@ if has('vim_starting')
 	let g:loaded_zip = 1
 	let g:loaded_zipPlugin = 1
 
+	" Python 2
 	let g:loaded_python_provider = 0
-	let g:loaded_ruby_provider = 1
-	let g:loaded_node_provider = 1
+	" Python 3
+	if executable('/usr/bin/python3')
+		let g:python3_host_prog = '/usr/bin/python3'
+	elseif executable($PYENV_ROOT . '/shims/python3')
+		let g:python3_host_prog = $PYENV_ROOT . '/shims/python3'
+	elseif executable('/usr/local/bin/python3')
+		let g:python3_host_prog = '/usr/local/bin/python3'
+	else
+		let g:loaded_python3_provider = 0
+	endif
+	" Node.js
+	if executable('/usr/bin/neovim-node-host')
+		let g:node_host_prog = '/usr/bin/neovim-node-host'
+	else
+		let g:loaded_node_provider = 0
+	endif
+	" Ruby
+	let g:loaded_ruby_provider = 0
+	" Perl
+    let g:loaded_perl_provider = 0
 endif
 
 
