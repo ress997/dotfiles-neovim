@@ -1,6 +1,7 @@
 # SKK {{{
 [[plugins]]
 repo = 'tyru/eskk.vim'
+if = 'v:false'
 on_map = {i = '<plug>(eskk'}
 hook_add = '''
 	imap <c-j> <plug>(eskk:toggle)
@@ -102,26 +103,3 @@ hook_source = '''
 
 	call deoplete#enable()
 '''
-
-# snipes {{{
-[[plugins]]
-repo = 'Shougo/deoppet.nvim'
-depends = ['neosnippet-snippets', 'context_filetype.vim']
-on_event = 'InsertEnter'
-hook_source = '''
-	imap <C-k>  <Plug>(deoppet_expand)
-	imap <expr> L  deoppet#expandable() ? "\<Plug>(deoppet_expand)" : ''
-	imap <C-f>  <Plug>(deoppet_jump_forward)
-	imap <C-b>  <Plug>(deoppet_jump_backward)
-	xmap <C-l>  <Plug>(deoppet_select_text)
-	xmap <C-x>  <Plug>(deoppet_cut_text)
-
-	call deoppet#initialize()
-	call deoppet#custom#option('snippets',
-		\ map(globpath(&runtimepath, 'neosnippets', 1, 1),
-		\     "{ 'path': v:val }"))
-'''
-
-[[plugins]]
-repo = 'Shougo/neosnippet-snippets'
-# }}}

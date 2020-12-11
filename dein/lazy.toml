@@ -72,10 +72,6 @@ on_path = '.*'
 # }}}
 # file {{{
 [[plugins]]
-repo = 'ms-jpq/chadtree'
-on_cmd = 'CHADopen'
-
-[[plugins]]
 repo ='Shougo/defx.nvim'
 on_cmd = 'Defx'
 depends = ['defx-icons', 'defx-git']

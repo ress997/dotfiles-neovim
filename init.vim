@@ -199,6 +199,9 @@ endif
 
 " }}}
 
+" 背景を黒ベースに
+set background=dark
+
 " 行番号を表示する
 set number
 
@@ -220,7 +223,7 @@ set cmdheight=1
 set list listchars=tab:¦\ ,trail:･
 
 " Enable true color
-if exists('+termguicolors')
+if exists('+termguicolors') && $TERM_PROGRAM !=# "Apple_Terminal"
 	set termguicolors
 endif
 
