@@ -1,30 +1,36 @@
+# vim:foldmethod=marker:
 [[plugins]]
 repo = 'Shougo/dein.vim'
+hook_add = '''
+	" Dein Clearn
+	function! s:dein_clean() abort
+		let s:plugins = dein#check_clean()
+		if !empty(s:plugins)
+			echo s:plugins
+			call map(s:plugins, "delete(v:val, 'rf')")
+			call dein#recache_runtimepath()
+		endif
+	endfunction
+	command! DeinClean call s:dein_clean()
+
+	" Dein List
+	" https://koturn.hatenablog.com/entry/2016/09/01/050000
+	function! s:dein_list() abort
+		echomsg '[dein] #: not sourced, X: not installed'
+		for pair in items(dein#get())
+			echomsg (!isdirectory(pair[1].path) ? 'X'
+					\ : pair[1].sourced ? ' '
+					\ : '#') pair[0]
+		endfor
+	endfunction
+	command! DeinList call s:dein_list()
+'''
 
 [[plugins]]
 repo = 'cocopon/iceberg.vim'
 hook_add = '''
 autocmd MyAutoCmd VimEnter * nested colorscheme iceberg
 '''
-
-# ------
-
-[[plugins]]
-repo = 'sheerun/vim-polyglot'
-merged = 0
-hook_add = '''
-let g:polyglot_disabled = ['markdown']
-'''
-
-[[plugins]] # vim
-repo = 'vim-jp/syntax-vim-ex'
-
-[[plugins]] # zsh
-repo = 'chrisbra/vim-zsh'
-
-[[plugins]]
-repo = 'vim-jp/vimdoc-ja'
-hook_add = 'set helplang=ja,en'
 
 # ------
 
@@ -45,70 +51,42 @@ hook_add = '''
 # ------
 
 [[plugins]]
-repo = 'mengelbrecht/lightline-bufferline'
+repo = 'sheerun/vim-polyglot'
+merged = 'v:false'
+hook_add = '''
+let g:polyglot_disabled = ['markdown']
+'''
+
+[[plugins]] # vim
+repo = 'vim-jp/syntax-vim-ex'
+
+[[plugins]] # zsh
+repo = 'chrisbra/vim-zsh'
 
 [[plugins]]
-repo = 'itchyny/lightline.vim'
-depends = ['lightline-bufferline']
-hook_add = '''
-	" 現在のモードを表示しない
-	set noshowmode
-	" タブページを常に表示
-	set showtabline=2
-
-	let g:lightline = {'colorscheme': 'iceberg'}
-	let g:lightline.active = {}
-	let g:lightline.active.left = [['mode', 'paste'], ['filename'], ['skk']]
-	let g:lightline.active.right = [['filetype'], ['fileencoding', 'indent'], ['percent']]
-	let g:lightline.component_function = {}
-	let g:lightline.my = {}
-
-	let g:lightline.component_function.filetype = 'g:lightline.my.filetype'
-	function! g:lightline.my.filetype() abort
-		return (strlen(&filetype) ? &filetype : 'No ft')
-	endfunction
-
-	let g:lightline.component_function.indent = 'g:lightline.my.indent'
-	function! g:lightline.my.indent() abort
-		if &expandtab
-			let s:indent = winwidth('.') >= 70 ? 'Space' : 'S'
-		else
-			let s:indent =  winwidth('.') >= 70 ? 'Tab' : 'T'
-		endif
-		return s:indent . ':' . &shiftwidth
-	endfunction
-
-	let g:lightline.component_function.skk = 'g:lightline.my.skkmode'
-	function! g:lightline.my.skkmode() abort
-		if dein#is_sourced('eskk.vim') && eskk#is_enabled()
-			return get(g:eskk#statusline_mode_strings, eskk#get_current_instance().mode, '??')
-		else
-			return ''
-		endif
-	endfunction
-
-	" bufferline
-	let g:lightline.tabline = {'left': [['buffers']], 'right': [['close']]}
-	let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
-	let g:lightline.component_type = {'buffers': 'tabsel'}
-	" バッファ番号を表示
-	let g:lightline#bufferline#show_number = v:true
-	" 絵文字を使用
-	let g:lightline#bufferline#unicode_symbols = v:true
-'''
+repo = 'vim-jp/vimdoc-ja'
+hook_add = 'set helplang=ja,en'
 
 # ------
 
 [[plugins]]
 repo = 'Shougo/neco-syntax'
+on_source = 'deoplete.nvim'
 
 [[plugins]]
 repo = 'tbodt/deoplete-tabnine'
 build = './install.sh'
+on_source = 'deoplete.nvim'
 
 [[plugins]]
 repo = 'Shougo/deoplete-nextword'
 if = 'executable("nextword")'
+on_source = 'deoplete.nvim'
+
+[[plugins]]
+repo = 'ujihisa/neco-look'
+if = 'executable("look")'
+on_source = 'deoplete.nvim'
 
 [[plugins]]
 repo = 'Jagua/vim-denite-ghq'

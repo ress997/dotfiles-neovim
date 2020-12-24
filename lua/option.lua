@@ -17,6 +17,9 @@ vim.o.keywordprg = ':help'
 -- 行頭行末の左右移動で行をまたぐ
 vim.o.whichwrap = 'b,s,h,l,<,>,[,]'
 
+-- Toggle paste
+vim.o.pastetoggle = '<F2>'
+
 -- grep {{{
 if vim.fn.executable('rg') == 1 then
 	-- Use rg (ripgrep)
@@ -139,7 +142,8 @@ vim.o.splitbelow = true
 vim.o.splitright = true
 
 -- 折りたたみ
-vim.wo.foldcolumn = '4'
+vim.wo.foldcolumn = 'auto:3'
+vim.wo.foldlevel = 1
 vim.wo.foldmethod = 'marker'
 
 -- カーソル {{{
@@ -154,5 +158,3 @@ vim.wo.cursorline = true
 vim.o.guicursor = 'n-v-c:block-Cursor/lCursor-blinkon0,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor'
 
 -- }}}
-
-

@@ -54,6 +54,3 @@ vim.api.nvim_set_keymap('n', '[Window]J', ':<C-u>J', {noremap = true, silent = t
 vim.api.nvim_set_keymap('n', '[Window]K', ':<C-u>K', {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '[Window]L', ':<C-u>L', {noremap = true, silent = true})
 -- }}}
-
--- Toggle paste
-vim.o.pastetoggle = '<F2>'

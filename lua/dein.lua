@@ -12,7 +12,7 @@ if not string.match(vim.o.runtimepath, '/dein.vim') then
 	if vim.fn.isdirectory(dein_repo_dir) ~= 1 then
 		os.execute('git clone https://github.com/Shougo/dein.vim '..dein_repo_dir)
 	end
-	vim.o.runtimepath = vim.o.runtimepath .. ',' .. dein_repo_dir
+	vim.o.runtimepath = dein_repo_dir .. ',' .. vim.o.runtimepath
 end
 
 if vim.call('dein#load_state', dein_dir) == 1 then
