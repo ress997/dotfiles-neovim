@@ -10,6 +10,7 @@
 
 vim.api.nvim_set_keymap('n', '<CR>', ':<C-u>call append(".", "")<CR>', {noremap = true, silent = true} )
 vim.api.nvim_set_keymap( 'n', '<Tab>', ':bnext<CR>', {noremap = true, silent = true} )
+
 --  MiddleMouse の無効化
 vim.api.nvim_set_keymap('', '<MiddleMouse>', '<Nop>', {})
 vim.api.nvim_set_keymap('', '<2-MiddleMouse>', '<Nop>', {})
@@ -24,7 +25,7 @@ vim.api.nvim_set_keymap('n', 'q', '<Nop>', {noremap = true})
 vim.api.nvim_set_keymap('n', 'Q', '<Nop>', {noremap = true})
 
 -- Y: 行末までヤンク
-vim.cmd('nnoremap Y y$')
+vim.api.nvim_set_keymap('n', 'Y', 'y$', {noremap = true})
 
 -- +/-: 数字を変化させる
 vim.api.nvim_set_keymap('n', '+', '<C-a>', {noremap = true})

@@ -24,6 +24,17 @@ hook_add = '''
 		endfor
 	endfunction
 	command! DeinList call s:dein_list()
+
+	" Dein Update
+	function! s:dein_update() abort
+		if empty(g:dein#install_github_api_token)
+			call dein#check_update(v:true)
+		else
+			call dein#update()
+		endif
+		echo dein#get_updates_log()
+	endfunction
+	command! DeinUpdate call s:dein_update()
 '''
 
 [[plugins]]
@@ -48,14 +59,22 @@ hook_add = '''
 	let g:loaded_matchparen = v:true
 '''
 
+[[plugins]] # 日本語 help を追加
+repo = 'vim-jp/vimdoc-ja'
+hook_add = 'set helplang=ja,en'
+
 # ------
 
-[[plugins]]
+[[plugins]] # 言語パック
 repo = 'sheerun/vim-polyglot'
 merged = 'v:false'
 hook_add = '''
 let g:polyglot_disabled = ['markdown']
 '''
+
+[[plugins]] # dein.vim
+repo = 'delphinus/vim-toml-dein'
+depends = 'vim-polyglot'
 
 [[plugins]] # vim
 repo = 'vim-jp/syntax-vim-ex'
@@ -63,19 +82,18 @@ repo = 'vim-jp/syntax-vim-ex'
 [[plugins]] # zsh
 repo = 'chrisbra/vim-zsh'
 
-[[plugins]]
-repo = 'vim-jp/vimdoc-ja'
-hook_add = 'set helplang=ja,en'
-
 # ------
+
+[[plugins]] # FileType 検知 Lib
+repo = 'Shougo/context_filetype.vim'
 
 [[plugins]]
 repo = 'Shougo/neco-syntax'
 on_source = 'deoplete.nvim'
 
 [[plugins]]
-repo = 'tbodt/deoplete-tabnine'
-build = './install.sh'
+repo = 'ujihisa/neco-look'
+if = 'executable("look")'
 on_source = 'deoplete.nvim'
 
 [[plugins]]
@@ -84,8 +102,13 @@ if = 'executable("nextword")'
 on_source = 'deoplete.nvim'
 
 [[plugins]]
-repo = 'ujihisa/neco-look'
-if = 'executable("look")'
+repo = 'tbodt/deoplete-tabnine'
+if = 'v:false'
+build = './install.sh'
+on_source = 'deoplete.nvim'
+
+[[plugins]]
+repo = 'deoplete-plugins/deoplete-zsh'
 on_source = 'deoplete.nvim'
 
 [[plugins]]

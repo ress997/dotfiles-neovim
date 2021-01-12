@@ -1,0 +1,244 @@
+# Complete {{{
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+depends = 'context_filetype.vim'
+on_event = 'InsertEnter'
+hook_add = '''
+	" 補完のオプション
+	set completeopt=menu,menuone,noinsert,noselect
+	" 補完の表示項目数
+	set pumheight=10
+	" ins-completion-menu 関連のメッセージを表示しない
+	set shortmess+=c
+
+	set isfname-==
+'''
+hook_source = '''
+	" <TAB>: completion.
+	inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#manual_complete()
+	function! s:check_back_space() abort
+		let col = col('.') - 1
+		return !col || getline('.')[col - 1]  =~# '\s'
+	endfunction
+
+	" <S-TAB>: completion back.
+	inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+	" <C-g>:
+	inoremap <expr><C-g> deoplete#refresh()
+
+	" <CR>: close popup and save indent.
+	inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+	function! s:my_cr_function() abort
+		return pumvisible() ? deoplete#close_popup()."\<CR>" : "\<CR>"
+	endfunction
+
+	call deoplete#custom#source('nextword', 'filetypes',
+      \ ['markdown', 'help', 'gitcommit', 'text'])
+
+	" converters
+	call deoplete#custom#source('_', 'converters', [
+	\	'converter_remove_paren',
+	\ 	'converter_remove_overlap',
+	\ 	'matcher_length',
+	\ 	'converter_truncate_abbr',
+	\ 	'converter_truncate_menu',
+	\ 	'converter_auto_delimiter',
+	\ ])
+
+	call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy', 'matcher_length'])
+	"call deoplete#custom#source('eskk', 'matchers', [])
+
+	call deoplete#custom#option('ignore_sources', {'_': ['around', 'buffer', 'tag', 'dictionary']})
+
+	call deoplete#custom#option({
+			\ 'auto_refresh_delay': 10,
+			\ 'camel_case': v:true,
+			\ 'skip_multibyte': v:true,
+			\ 'prev_completion_mode': 'none',
+			\ 'auto_preview': v:true,
+			\ })
+
+	call deoplete#enable()
+'''
+# }}}
+# Filer {{{
+[[plugins]]
+repo = 'Shougo/defx.nvim'
+if = 'v:false'
+on_cmd = 'Defx'
+depends = ['defx-icons', 'defx-git']
+hook_add = '''
+	nnoremap <silent> <Space>f :<C-u>Defx -listed -resume -buffer-name=win-`win_getid()`<CR>
+'''
+hook_source = '''
+	function! Root(path) abort
+		return fnamemodify(a:path, ':t')
+	endfunction
+	call defx#custom#source('file', {
+			\ 'root': 'Root',
+			\})
+	call defx#custom#column('filename', {
+			\ 'directory_icon': '',
+			\ 'opened_icon': '',
+			\ })
+	call defx#custom#column('mark', {
+			\ 'readonly_icon': '✗',
+			\ 'selected_icon': '✓',
+			\ })
+	call defx#custom#option('_', {
+			\ 'columns': 'indent:git:icons:filename',
+			\ 'show_ignored_files': 1,
+			\ })
+'''
+[plugins.ftplugin]
+defx = '''
+	nnoremap <silent><buffer><expr> ~ defx#async_action('cd')
+	nnoremap <silent><buffer><expr> h defx#async_action('cd', ['..'])
+	nnoremap <silent><buffer><expr> j line('.') == line('$') ? 'gg' : 'j'
+	nnoremap <silent><buffer><expr> k line('.') == 1 ? 'G' : 'k'
+	nnoremap <silent><buffer><expr> l defx#async_action('open')
+	nnoremap <silent><buffer><expr> . defx#do_action('toggle_ignored_files')
+	nnoremap <silent><buffer><expr> <Tab> winnr('$') != 1 ? ':<C-u>wincmd w<CR>' : ':<C-u>Defx -buffer-name=temp -split=vertical<CR>'
+	nnoremap <silent><buffer><expr> <Space> defx#do_action('toggle_select') . 'j'
+	nnoremap <silent><buffer><expr> <CR> defx#do_action('open')
+	nnoremap <silent><buffer><expr> q defx#do_action('quit')
+	nnoremap <silent><buffer><expr> o defx#async_action('open_or_close_tree')
+	nnoremap <silent><buffer><expr> O defx#async_action('open_tree_recursive')
+	nnoremap <silent><buffer><expr> ! defx#do_action('execute_command')
+	nnoremap <silent><buffer><expr> * defx#do_action('toggle_select_all')
+	nnoremap <silent><buffer><expr> <C-g> defx#do_action('print')
+	nnoremap <silent><buffer><expr> <C-l> defx#do_action('redraw')
+	nnoremap <silent><buffer><expr> E defx#do_action('open', 'vsplit')
+	nnoremap <silent><buffer><expr> K defx#do_action('new_directory')
+	nnoremap <silent><buffer><expr> M defx#do_action('new_multiple_files')
+	nnoremap <silent><buffer><expr> N defx#do_action('new_file')
+	nnoremap <silent><buffer><expr> P defx#do_action('open', 'pedit')
+	nnoremap <silent><buffer><expr> S defx#do_action('toggle_sort', 'Time')
+	nnoremap <silent><buffer><expr> c defx#do_action('copy')
+	nnoremap <silent><buffer><expr> d defx#do_action('remove_trash')
+	nnoremap <silent><buffer><expr> m defx#do_action('move')
+	nnoremap <silent><buffer><expr> p defx#do_action('paste')
+	nnoremap <silent><buffer><expr> r defx#do_action('rename')
+	nnoremap <silent><buffer><expr> se defx#do_action('save_session')
+	nnoremap <silent><buffer><expr> sl defx#do_action('load_session')
+	nnoremap <silent><buffer><expr> x defx#do_action('execute_system')
+	nnoremap <silent><buffer><expr> yy defx#do_action('yank_path')
+'''
+
+[[plugins]]
+repo = 'kristijanhusak/defx-icons'
+if = 'v:false'
+hook_add = '''
+	let g:defx_icons_column_length = 2
+'''
+
+[[plugins]]
+repo = 'kristijanhusak/defx-git'
+if = 'v:false'
+hook_add = '''
+	let g:defx_git#indicators = {
+		\ 'Modified'  : '+',
+		\ 'Staged'    : '●',
+		\ 'Untracked' : '?',
+		\ 'Renamed'   : '➜',
+		\ 'Unmerged'  : '═',
+		\ 'Deleted'   : 'x',
+		\ 'Unknown'   : '?'
+		\ }
+'''
+# }}}
+# Fuzzy {{{
+[[plugins]]
+repo = 'raghur/fruzzy'
+on_source = ['denite.nvim']
+hook_source = '''
+	let g:fruzzy#sortonempty = 0
+	let g:fruzzy#use_native = 1
+'''
+hook_post_update = 'call fruzzy#install()'
+
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+on_cmd = 'Denite'
+hook_add = '''
+	nnoremap [denite] <Nop>
+	nmap <Space>d [denite]
+
+	nnoremap <silent> [denite]b :<C-u>Denite buffer<CR>
+	nnoremap <silent> [denite]f :<C-u>Denite file/rec<CR>
+	nnoremap <silent> [denite]g :<C-u>Denite Denite -buffer-name=search -no-empty grep<CR>
+
+	nnoremap <silent> ft :<C-u>Denite filetype<CR>
+	nnoremap <silent> ;; :<C-u>Denite command command_history<CR>
+
+	nnoremap <expr> / line('$') > 10000 ? '/' : ":\<C-u>Denite -buffer-name=search -start-filter line\<CR>"
+	nnoremap <expr> n line('$') > 10000 ? 'n' : ":\<C-u>Denite -buffer-name=search -resume -refresh -no-start-filter\<CR>"
+	nnoremap <expr> * line('$') > 10000 ? '*' : ":\<C-u>DeniteCursorWord -buffer-name=search line\<CR>"
+
+	" 以前のバッファを再表示する
+	nnoremap <silent> [denite]r :<C-u>Denite -resume<CR>
+	" 以前のバッファで次の候補を即座に開く
+	nnoremap <silent> [denite]n :<C-u>Denite -resume -immediately -cursor-pos=+1 <CR>
+	" 以前のバッファで前の候補を即座に開く
+	nnoremap <silent> [denite]p :<C-u>Denite -resume -immediately -cursor-pos=-1<CR>
+'''
+hook_post_source = '''
+	" file/rec
+	if executable('fd')
+		" fd --follow --hidden --exclude '.git' --type f
+		call denite#custom#var('file/rec', 'command', ['fd', '--follow', '--hidden', '--exclude', '.git', '--type', 'f', ''])
+	elseif executable('rg')
+		call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
+	endif
+	call denite#custom#source('file/rec', 'matchers', ['matcher/fruzzy'])
+
+	" file/rec/git
+	call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+	call denite#custom#var('file/rec/git', 'command', ['git', 'ls-files', '-co', '--exclude-standard'])
+
+	" grep
+	if executable('rg')
+		call denite#custom#var('grep', 'command', ['rg'])
+		call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep', '--no-heading'])
+		call denite#custom#var('grep', 'recursive_opts', [])
+		call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+		call denite#custom#var('grep', 'separator', ['--'])
+		call denite#custom#var('grep', 'final_opts', [])
+	elseif executable('pt')
+		call denite#custom#var('grep', 'command', ['pt'])
+		call denite#custom#var('grep', 'default_opts', ['-i', '--nogroup', '--nocolor', '--smart-case'])
+		call denite#custom#var('grep', 'recursive_opts', [])
+		call denite#custom#var('grep', 'pattern_opt', [])
+		call denite#custom#var('grep', 'separator', ['--'])
+		call denite#custom#var('grep', 'final_opts', [])
+	endif
+
+	call denite#custom#option('default', {
+			\ 'auto_accel': v:true,
+			\ 'prompt': '>',
+			\ 'source_names': 'short',
+			\ 'split': 'floating',
+			\ })
+
+	" Denite menu {{{
+	let s:menus = {}
+
+
+	call denite#custom#var('menu', 'menus', s:menus)
+	" }}}
+'''
+[plugins.ftplugin]
+denite = '''
+	nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
+	nnoremap <silent><buffer><expr> d denite#do_map('do_action', 'delete')
+	nnoremap <silent><buffer><expr> p denite#do_map('do_action', 'preview')
+	nnoremap <silent><buffer><expr> q denite#do_map('quit')
+	nnoremap <silent><buffer><expr> i denite#do_map('open_filter_buffer')
+	nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
+'''
+denite-filter = '''
+	inoremap <silent><buffer> <C-j> <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
+	inoremap <silent><buffer> <C-k> <Esc><C-w>p:call cursor(line('.')-1,0)<CR><C-w>pA
+'''
+# }}}
