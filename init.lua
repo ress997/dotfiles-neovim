@@ -41,3 +41,7 @@ end
 require('dein')
 require('option')
 require('key')
+
+if vim.fn.filereadable(vim.env.XDG_CONFIG_HOME .. '/nvim/local.vim') == 1 then
+	vim.cmd[[source $XDG_CONFIG_HOME/nvim/local.vim]]
+end

@@ -32,7 +32,6 @@ hook_add = '''
 		else
 			call dein#update()
 		endif
-		echo dein#get_updates_log()
 	endfunction
 	command! DeinUpdate call s:dein_update()
 '''
@@ -74,7 +73,7 @@ let g:polyglot_disabled = ['markdown']
 
 [[plugins]] # dein.vim
 repo = 'delphinus/vim-toml-dein'
-depends = 'vim-polyglot'
+depends = ['vim-polyglot', 'syntax-vim-ex']
 
 [[plugins]] # vim
 repo = 'vim-jp/syntax-vim-ex'
