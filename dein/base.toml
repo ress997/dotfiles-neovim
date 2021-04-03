@@ -102,8 +102,7 @@ on_source = 'deoplete.nvim'
 
 [[plugins]]
 repo = 'tbodt/deoplete-tabnine'
-if = 'v:false'
-build = './install.sh'
+build = 'curl -SL https://github.com/codota/TabNine/raw/master/dl_binaries.sh | bash'
 on_source = 'deoplete.nvim'
 
 [[plugins]]
